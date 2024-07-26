@@ -1,0 +1,22 @@
+version: '3'
+services:
+  #mongodb 5
+  mongodb:
+    image: mongo:5
+    container_name: mongodb_pokedex_nest
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongodb_data:/data/db
+    networks:
+      - mongodb_network
+    environment:
+      MONGODB_DATABASE: nest_pokedex
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    restart: always
+
+#network
+networks:
+  mongodb_network:
+    driver: bridge
