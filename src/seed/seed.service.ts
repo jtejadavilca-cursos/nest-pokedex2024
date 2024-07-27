@@ -16,30 +16,39 @@ export class SeedService {
     private readonly http: HttpAdapter
   ) {}
 
-  async executeSeed() {
+  async executeSeed(forceInsert = false) {
     console.log('executeSeed');
-    if(!await this.existData()) {
-      const totalData = [];
-
-      for (let offset = 0; offset < 100; offset+=10) {
-        const dataInsert = [];
-        const { results } = await this.http.get<PokeResponse>(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=${offset}`);
-        results.forEach(({name, url}) => {
-          const segments = url.split('/');
-          const no = +segments[segments.length - 2];
-    
-          dataInsert.push({no, name});
-          
-        });
-        totalData.push(...dataInsert);
-        this.pokeResponseModel.create(dataInsert);
-        
-      }
-
-
-      return totalData;
+    const existData = await this.existData();
+    if(existData && !forceInsert) {
+      return 'Data already exist';
     }
-    return 'Data already exist';
+
+    console.log('existData', existData);
+    console.log('forceInsert', forceInsert);
+    if(forceInsert) {
+      await this.pokeResponseModel.deleteMany({});
+    }
+      
+
+    const totalData = [];
+
+    for (let offset = 0; offset < 100; offset+=10) {
+      const dataInsert = [];
+      const { results } = await this.http.get<PokeResponse>(`https://pokeapi.co/api/v2/pokemon?limit=10&offset=${offset}`);
+      results.forEach(({name, url}) => {
+        const segments = url.split('/');
+        const no = +segments[segments.length - 2];
+
+        dataInsert.push({no, name});
+        
+      });
+      totalData.push(...dataInsert);
+      this.pokeResponseModel.create(dataInsert);
+      
+    }
+
+
+    return totalData;
   }
 
   async executeClear() {
