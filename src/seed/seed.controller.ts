@@ -10,4 +10,9 @@ export class SeedController {
     return this.seedService.executeSeed();
   }
 
+  @Get('clear')
+  executeClear() {
+    return this.seedService.executeClear();
+  }
+
 }
