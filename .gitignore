@@ -3,6 +3,8 @@
 /node_modules
 /mongodb_data
 
+.env
+
 # Logs
 logs
 *.log
