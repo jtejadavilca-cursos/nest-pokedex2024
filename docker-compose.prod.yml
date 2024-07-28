@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  pokedexapp:
+    depends_on:
+      - mongodb
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: pokedex-docker
+    container_name: pokedexapp
+    restart: always # reiniciar el contenedor si se detiene
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - mongodb_network
+    # working_dir: /var/www/pokedex
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      DB_NAME: ${DB_NAME}
+      PORT: ${PORT}
+      DEFAULT_LIMIT: ${DEFAULT_LIMIT}
+    # volumes:
+    #   - ./:/var/www/pokedex
+
+  mongodb:
+    image: mongo:5
+    container_name: mongodb_pokedex_nest
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb_data:/data/db
+    networks:
+      - mongodb_network
+    environment:
+      MONGODB_DATABASE: nest_pokedex
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    restart: always
+
+#network
+networks:
+  mongodb_network:
+    driver: bridge
